@@ -6,8 +6,8 @@ const QRCodeSchema = new Schema(
     {
         value: { type: String, required: true },
         ticketType: { type: Number, required: true, min: 0, max: 3 },
-        event: mongoose.SchemaTypes.ObjectId,
-        ticket: mongoose.SchemaTypes.ObjectId,
+        event: { type: mongoose.SchemaTypes.ObjectId, ref: "Event" },
+        ticket: { type: mongoose.SchemaTypes.ObjectId, ref: "Ticket" },
     },
     { collection: "QRCode", timestamps: true }
 );
