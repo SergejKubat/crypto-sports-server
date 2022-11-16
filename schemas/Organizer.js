@@ -4,14 +4,14 @@ const Schema = mongoose.Schema;
 
 const OrganizerSchema = new Schema(
     {
-        name: { type: "String", required: true, index: { unique: true } },
-        image: { type: "String" },
-        description: { type: "String" },
-        website: { type: "String" },
-        socialMedia: { type: "Map", of: "String" },
-        createdAt: { type: "Date", default: Date.now },
+        name: { type: String, required: true, index: { unique: true } },
+        user: mongoose.SchemaTypes.ObjectId,
+        image: String,
+        description: String,
+        website: String,
+        socialMedia: { type: mongoose.SchemaTypes.Map, of: String },
     },
-    { collection: "Organizer" }
+    { collection: "Organizer", timestamps: true }
 );
 
 module.exports = mongoose.model("Organizer", OrganizerSchema);

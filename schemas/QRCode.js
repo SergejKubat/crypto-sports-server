@@ -4,13 +4,12 @@ const Schema = mongoose.Schema;
 
 const QRCodeSchema = new Schema(
     {
-        value: { type: "String", required: true },
-        ticketType: { type: "Number", required: true },
-        event: mongoose.Types.ObjectId,
-        ticket: mongoose.Types.ObjectId,
-        createdAt: { type: "Date", default: Date.now },
+        value: { type: String, required: true },
+        ticketType: { type: Number, required: true, min: 0, max: 3 },
+        event: mongoose.SchemaTypes.ObjectId,
+        ticket: mongoose.SchemaTypes.ObjectId,
     },
-    { collection: "QRCode" }
+    { collection: "QRCode", timestamps: true }
 );
 
 module.exports = mongoose.model("QRCode", QRCodeSchema);

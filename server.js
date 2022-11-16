@@ -14,11 +14,7 @@ app.use(morgan("combined"));
 
 // DATABASES
 
-mongoose.connect(process.env.MONGODB_URI);
-
-const connection = mongoose.connection;
-
-connection.once("open", () => {
+mongoose.connect(process.env.MONGODB_URI, () => {
     console.log("Database connection established successfully!");
 });
 
