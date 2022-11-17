@@ -15,6 +15,10 @@ const UserSchema = new Schema(
     { collection: "User", timestamps: true }
 );
 
+UserSchema.statics.findByUsername = function (username) {
+    return this.findOne({ username: username });
+};
+
 UserSchema.statics.findByEmail = function (email) {
     return this.findOne({ email: email });
 };

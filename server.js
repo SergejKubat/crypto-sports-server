@@ -1,12 +1,12 @@
+require("dotenv").config();
+
 const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
-const redis = require("redis");
-const connectRedis = require("connect-redis");
+/*const redis = require("redis");
+const connectRedis = require("connect-redis");*/
 const cors = require("cors");
 const morgan = require("morgan");
-
-require("dotenv").config();
 
 const AuthRoutes = require("./routes/AuthRoutes");
 
@@ -21,7 +21,7 @@ mongoose.connect(process.env.MONGODB_URI, () => {
     console.log("Database connection established successfully!");
 });
 
-const RedisStore = connectRedis(session);
+/*const RedisStore = connectRedis(session);
 
 const redisClient = redis.createClient({
     host: "localhost",
@@ -34,17 +34,19 @@ redisClient.on("error", function (err) {
 
 redisClient.on("connect", function (err) {
     console.log("Connected to redis successfully");
-});
+});*/
 
 // MIDDLEWARES
 
 // CORS
 app.use(cors());
 
+app.use(express.json());
+
 // sessions
 app.use(
     session({
-        store: new RedisStore({ client: redisClient }),
+        //store: new RedisStore({ client: redisClient }),
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,
