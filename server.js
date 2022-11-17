@@ -8,6 +8,8 @@ const morgan = require("morgan");
 
 require("dotenv").config();
 
+const AuthRoutes = require("./routes/AuthRoutes");
+
 const PORT = process.env.PORT || 5000;
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
@@ -23,7 +25,7 @@ const RedisStore = connectRedis(session);
 
 const redisClient = redis.createClient({
     host: "localhost",
-    port: 6379,
+    port: 6379
 });
 
 redisClient.on("error", function (err) {
@@ -36,24 +38,27 @@ redisClient.on("connect", function (err) {
 
 // MIDDLEWARES
 
+// CORS
 app.use(cors());
 
+// sessions
 app.use(
     session({
         store: new RedisStore({ client: redisClient }),
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,
-        cookie: { secure: false, maxAge: ONE_DAY },
+        cookie: { secure: false, maxAge: ONE_DAY }
     })
 );
 
+// routes
+app.use("/api", AuthRoutes);
+
+// logger
 app.use(morgan("combined"));
 
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-});
-
+// start server
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });

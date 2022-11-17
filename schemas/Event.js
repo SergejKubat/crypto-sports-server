@@ -15,7 +15,7 @@ const EventSchema = new Schema(
         organizerWallet: String,
         contractAddress: String,
         isQRExternal: { type: Boolean, default: false },
-        status: { type: String, required: true },
+        status: { type: String, required: true }
     },
     { collection: "Event", timestamps: true }
 );

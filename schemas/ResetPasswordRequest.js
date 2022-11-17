@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const ResetPasswordRequestSchema = new Schema(
     {
         email: { type: String, required: true },
-        used: { type: Boolean, default: false },
+        used: { type: Boolean, default: false }
     },
     { collection: "ResetPasswordRequest", timestamps: true }
 );
