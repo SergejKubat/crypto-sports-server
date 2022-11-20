@@ -9,6 +9,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 
 const AuthRoutes = require("./routes/AuthRoutes");
+const EventRoutes = require("./routes/EventRoutes");
 
 const PORT = process.env.PORT || 5000;
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -54,6 +55,7 @@ app.use(
 
 // routes
 app.use("/api", AuthRoutes);
+app.use("/api/event", EventRoutes);
 
 // logger
 app.use(morgan("combined"));
