@@ -40,13 +40,11 @@ redisClient.on("connect", function (err) {
 
 // CORS
 app.use(cors());
-
 app.use(express.json());
-
-// sessions
 app.use(
     session({
         //store: new RedisStore({ client: redisClient }),
+        name: "sessionId",
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,
