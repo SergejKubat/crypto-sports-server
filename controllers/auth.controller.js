@@ -98,10 +98,6 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
     const session = req.session;
 
-    if (!session.username) {
-        return res.status(401).json({ message: "Not logged in." });
-    }
-
     session.destroy((err) => {
         if (err) {
             return res.status(500).json({ message: "Server error." });
@@ -113,10 +109,6 @@ exports.logout = (req, res) => {
 
 exports.auth = async (req, res) => {
     const session = req.session;
-
-    if (!session.username) {
-        return res.status(401).json({ message: "Not logged in." });
-    }
 
     const user = await User.findOne({ username: session.username }).select("-password -verified");
 

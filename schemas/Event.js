@@ -10,6 +10,7 @@ const EventSchema = new Schema(
         location: String,
         category: { type: String, required: true },
         startDate: { type: Date, required: true },
+        tickets: { type: mongoose.SchemaTypes.Mixed },
         user: { type: mongoose.SchemaTypes.ObjectId, ref: "User" },
         organizerWallet: String,
         contractAddress: String,

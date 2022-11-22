@@ -8,8 +8,8 @@ const connectRedis = require("connect-redis");*/
 const cors = require("cors");
 const morgan = require("morgan");
 
-const AuthRoutes = require("./routes/AuthRoutes");
-const EventRoutes = require("./routes/EventRoutes");
+const AuthRoutes = require("./routes/auth.routes");
+const EventRoutes = require("./routes/event.routes");
 
 const PORT = process.env.PORT || 5000;
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -55,7 +55,7 @@ app.use(
 
 // routes
 app.use("/api", AuthRoutes);
-app.use("/api/event", EventRoutes);
+app.use("/api/events", EventRoutes);
 
 // logger
 app.use(morgan("combined"));
