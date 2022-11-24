@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const utils = require("../utils/format");
 
 const User = require("../schemas/User");
+const Invite = require("../schemas/Invite");
+const ResetPasswordRequest = require("../schemas/ResetPasswordRequest");
 
 exports.register = async (req, res) => {
     const session = req.session;
@@ -12,9 +14,7 @@ exports.register = async (req, res) => {
         return res.status(400).json({ message: "Already logged in." });
     }
 
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
+    const { username, email, password, inviteCode } = req.body;
 
     if (username.length < 3) {
         return res.status(400).json({ message: "Username is not valid." });
@@ -28,10 +28,37 @@ exports.register = async (req, res) => {
         return res.status(400).json({ message: "Password is not valid." });
     }
 
+    // check if user trying to register as organizer
+    let invite;
+
+    if (inviteCode) {
+        invite = await Invite.findById(inviteCode);
+
+        if (invite) {
+            const currentDate = new Date();
+
+            // if date difference is greather than 2 hours
+            if (currentDate.getTime() - invite.createdAt.getTime() > 2 * 60 * 60 * 1000) {
+                return res.status(400).json({ message: "Invitation has expired." });
+            }
+        }
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
     try {
-        const user = await User.create({ username: username, email: email, password: passwordHash });
+        const user = await User.create({
+            username: username,
+            email: email,
+            role: invite ? "organizer" : "user",
+            password: passwordHash
+        });
+
+        // if invitation exists, mark as 'used'
+        if (invite) {
+            invite.used = true;
+            await invite.save();
+        }
 
         // populate session
         session.username = user.username;
@@ -93,6 +120,48 @@ exports.login = async (req, res) => {
     const { password, verified, ...fields } = user._doc;
 
     res.json(fields);
+};
+
+exports.resetPassword = async (req, res) => {
+    const session = req.session;
+
+    if (session.username) {
+        return res.status(400).json({ message: "Already logged in." });
+    }
+
+    const resetPasswordRequestId = req.body.id;
+    const password = req.body.password;
+
+    const resetPasswordRequest = await ResetPasswordRequest.findById(resetPasswordRequestId);
+
+    if (!resetPasswordRequest) {
+        return res.status(400).json({ message: "Request not found." });
+    }
+
+    const currentDate = new Date();
+
+    // if date difference is greather than 2 hours
+    if (currentDate.getTime() - resetPasswordRequest.createdAt.getTime() > 2 * 60 * 60 * 1000) {
+        return res.status(400).json({ message: "Request has expired." });
+    }
+
+    const user = await User.findOne({ email: resetPasswordRequest.email });
+
+    if (!user) {
+        return res.status(400).json({ message: "User not found." });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // save user
+    user.password = passwordHash;
+    user.save();
+
+    // mark request as 'used'
+    resetPasswordRequest.used = true;
+    resetPasswordRequest.save();
+
+    res.json({ message: "Password successfully changed." });
 };
 
 exports.logout = (req, res) => {

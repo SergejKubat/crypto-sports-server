@@ -10,6 +10,8 @@ router.post("/register", AuthController.register);
 
 router.post("/login", AuthController.login);
 
+router.post("/reset-password", AuthController.resetPassword);
+
 router.get("/logout", auth, AuthController.logout);
 
 router.get("/auth", auth, AuthController.auth);

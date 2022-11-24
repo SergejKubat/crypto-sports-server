@@ -10,6 +10,10 @@ const morgan = require("morgan");
 
 const AuthRoutes = require("./routes/auth.routes");
 const EventRoutes = require("./routes/event.routes");
+const InviteRoutes = require("./routes/invite.routes");
+const ResetPasswordRoutes = require("./routes/reset-password.routes");
+
+//const Invite = require("./schemas/Invite");
 
 const PORT = process.env.PORT || 5000;
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -20,6 +24,8 @@ const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, () => {
     console.log("Database connection established successfully!");
+
+    //Invite.create({ email: "nikola@gmail.com" });
 });
 
 /*const RedisStore = connectRedis(session);
@@ -56,6 +62,8 @@ app.use(
 // routes
 app.use("/api", AuthRoutes);
 app.use("/api/events", EventRoutes);
+app.use("/api/invites", InviteRoutes);
+app.use("/api/resetPasswordRequests", ResetPasswordRoutes);
 
 // logger
 app.use(morgan("combined"));
