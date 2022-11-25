@@ -16,4 +16,6 @@ router.get("/:id", EventController.getById);
 
 router.get("/", EventController.getAll);
 
+router.post("/:id/qr-codes", auth, EventController.addQRCodes);
+
 module.exports = router;

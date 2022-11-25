@@ -2,6 +2,7 @@ const validator = require("validator");
 
 const User = require("../schemas/User");
 const Event = require("../schemas/Event");
+const QRCode = require("../schemas/QRCode");
 
 exports.create = async (req, res) => {
     const session = req.session;
@@ -132,4 +133,40 @@ exports.getAll = async (req, res) => {
     const events = await Event.find({ status: "published" }).sort({ startDate: -1 }).exec();
 
     res.json(events);
+};
+
+exports.addQRCodes = async (req, res) => {
+    const session = req.session;
+
+    if (session.role !== "organizer") {
+        return res.status(401).json({ message: "Not authorized." });
+    }
+
+    const id = req.params.id;
+
+    const event = await Event.findById(id);
+
+    if (!event) {
+        return res.status(404).json({ message: "Event not found." });
+    }
+
+    const qrCodesData = req.body;
+
+    const ticketTypes = Object.keys(qrCodesData);
+    const values = Object.values(qrCodesData);
+
+    const qrCodes = [];
+
+    for (let i = 0; i < ticketTypes.length; i++) {
+        for (let j = 0; j < values[i].length; j++) {
+            const value = values[i][j];
+            const ticketType = parseInt(ticketTypes[i]);
+
+            qrCodes.push({ value, ticketType, event: event.id });
+        }
+    }
+
+    await QRCode.insertMany(qrCodes);
+
+    res.status(201).json({ message: "QR codes successfully added." });
 };

@@ -11,6 +11,7 @@ const morgan = require("morgan");
 const AuthRoutes = require("./routes/auth.routes");
 const EventRoutes = require("./routes/event.routes");
 const InviteRoutes = require("./routes/invite.routes");
+const OrganizerRoutes = require("./routes/organizer.routes");
 const ResetPasswordRoutes = require("./routes/reset-password.routes");
 
 const PORT = process.env.PORT || 5000;
@@ -59,6 +60,7 @@ app.use(
 app.use("/api", AuthRoutes);
 app.use("/api/events", EventRoutes);
 app.use("/api/invites", InviteRoutes);
+app.use("/api/organizers", OrganizerRoutes);
 app.use("/api/resetPasswordRequests", ResetPasswordRoutes);
 
 // logger
