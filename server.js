@@ -13,6 +13,9 @@ const EventRoutes = require("./routes/event.routes");
 const InviteRoutes = require("./routes/invite.routes");
 const OrganizerRoutes = require("./routes/organizer.routes");
 const ResetPasswordRoutes = require("./routes/reset-password.routes");
+const TicketRoutes = require("./routes/ticket.routes");
+
+//const TicketController = require("./controllers/ticket.controller");
 
 const PORT = process.env.PORT || 5000;
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -23,6 +26,8 @@ const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, () => {
     console.log("Database connection established successfully!");
+
+    //TicketController.create(1, 0, "0xae17f3ff16d25139c081eeae9ba54f79b438d288", "0x39335be98c4d13e1325a66027d9d22fb7e90ea51");
 });
 
 /*const RedisStore = connectRedis(session);
@@ -62,6 +67,7 @@ app.use("/api/events", EventRoutes);
 app.use("/api/invites", InviteRoutes);
 app.use("/api/organizers", OrganizerRoutes);
 app.use("/api/resetPasswordRequests", ResetPasswordRoutes);
+app.use("/api/tickets", TicketRoutes);
 
 // logger
 app.use(morgan("combined"));
