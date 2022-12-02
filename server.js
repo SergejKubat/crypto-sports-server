@@ -8,7 +8,7 @@ const connectRedis = require("connect-redis");*/
 const cors = require("cors");
 const morgan = require("morgan");
 
-const blockchain = require("./blockchain");
+const sync = require("./sync");
 
 const AuthRoutes = require("./routes/auth.routes");
 const EventRoutes = require("./routes/event.routes");
@@ -74,5 +74,5 @@ app.use(morgan("combined"));
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 
-    blockchain.setupListeners();
+    sync.setupListeners();
 });
