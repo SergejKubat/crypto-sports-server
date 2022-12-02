@@ -61,8 +61,6 @@ exports.setupListeners = async () => {
                 startId++;
             }
 
-            console.log(tickets);
-
             await Ticket.insertMany(tickets);
         })
         .on("changed", (changed) => console.log(changed))
