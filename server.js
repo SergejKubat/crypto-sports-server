@@ -5,8 +5,8 @@ const path = require("path");
 const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
-/*const redis = require("redis");
-const connectRedis = require("connect-redis");*/
+const { createClient } = require("redis");
+const RedisStore = require("connect-redis")(session);
 const cors = require("cors");
 
 const sync = require("./sync");
@@ -28,23 +28,16 @@ const app = express();
 
 // DATABASES
 mongoose.connect(process.env.MONGODB_URI, () => {
-    console.log("Database connection established successfully!");
+    console.log("MongoDB connection established successfully!");
 });
 
-/*const RedisStore = connectRedis(session);
+const redisClient = createClient({ legacyMode: true, host: process.env.REDIS_HOST, port: process.env.REDIS_PORT });
 
-const redisClient = redis.createClient({
-    host: "localhost",
-    port: 6379
-});
-
-redisClient.on("error", function (err) {
-    console.log("Could not establish a connection with redis. " + err);
-});
+redisClient.connect().catch(console.error);
 
 redisClient.on("connect", function (err) {
-    console.log("Connected to redis successfully");
-});*/
+    console.log("Redis connection established successfully!");
+});
 
 // MIDDLEWARES
 app.use(cors());
@@ -53,7 +46,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 app.use(
     session({
-        //store: new RedisStore({ client: redisClient }),
+        store: new RedisStore({ client: redisClient }),
         name: "sessionId",
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
