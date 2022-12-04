@@ -53,6 +53,8 @@ exports.getQRCode = async (req, res) => {
         return res.status(400).json({ message: "Provided wallet is not ticket owner." });
     }
 
+    // @TODO: verify ownership in contract
+
     // @TODO: verify signature
 
     const qrCode = await QRCode.findOne({ ticket: ticket.id });
