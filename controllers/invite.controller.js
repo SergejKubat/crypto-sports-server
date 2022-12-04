@@ -2,6 +2,8 @@ const validator = require("validator");
 
 const Invite = require("../schemas/Invite");
 
+const constants = require("../constants");
+
 exports.create = async (req, res) => {
     const session = req.session;
 
@@ -81,8 +83,7 @@ exports.getAll = async (req, res) => {
         case "active": {
             const currentDate = new Date();
 
-            // remove two hours from current date
-            currentDate.setTime(currentDate.getTime() - 2 * 60 * 60 * 1000);
+            currentDate.setTime(currentDate.getTime() - constants.TWO_HOURS);
 
             invites = await Invite.find({ used: false, createdAt: { $gt: currentDate } })
                 .sort({ createdAt: -1 })
@@ -92,8 +93,7 @@ exports.getAll = async (req, res) => {
         case "expired": {
             const currentDate = new Date();
 
-            // remove two hours from current date
-            currentDate.setTime(currentDate.getTime() - 2 * 60 * 60 * 1000);
+            currentDate.setTime(currentDate.getTime() - constants.TWO_HOURS);
 
             invites = await Invite.find({ used: false, createdAt: { $lt: currentDate } })
                 .sort({ createdAt: -1 })

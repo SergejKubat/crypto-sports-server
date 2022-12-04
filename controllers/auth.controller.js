@@ -1,11 +1,13 @@
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 
-const utils = require("../utils/format");
-
 const User = require("../schemas/User");
 const Invite = require("../schemas/Invite");
 const ResetPasswordRequest = require("../schemas/ResetPasswordRequest");
+
+const utils = require("../utils/format");
+
+const constants = require("../constants");
 
 exports.register = async (req, res) => {
     const session = req.session;
@@ -38,7 +40,7 @@ exports.register = async (req, res) => {
             const currentDate = new Date();
 
             // if date difference is greather than 2 hours
-            if (currentDate.getTime() - invite.createdAt.getTime() > 2 * 60 * 60 * 1000) {
+            if (currentDate.getTime() - invite.createdAt.getTime() > constants.TWO_HOURS) {
                 return res.status(400).json({ message: "Invitation has expired." });
             }
         }
@@ -141,7 +143,7 @@ exports.resetPassword = async (req, res) => {
     const currentDate = new Date();
 
     // if date difference is greather than 2 hours
-    if (currentDate.getTime() - resetPasswordRequest.createdAt.getTime() > 2 * 60 * 60 * 1000) {
+    if (currentDate.getTime() - resetPasswordRequest.createdAt.getTime() > constants.TWO_HOURS) {
         return res.status(400).json({ message: "Request has expired." });
     }
 

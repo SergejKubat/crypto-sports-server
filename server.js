@@ -8,9 +8,10 @@ const mongoose = require("mongoose");
 /*const redis = require("redis");
 const connectRedis = require("connect-redis");*/
 const cors = require("cors");
-const morgan = require("morgan");
 
 const sync = require("./sync");
+
+const constants = require("./constants");
 
 const AuthRoutes = require("./routes/auth.routes");
 const EventRoutes = require("./routes/event.routes");
@@ -22,12 +23,10 @@ const FileRoutes = require("./routes/file.routes");
 const UserRoutes = require("./routes/user.routes");
 
 const PORT = process.env.PORT || 5000;
-const ONE_DAY = 1000 * 60 * 60 * 24;
 
 const app = express();
 
 // DATABASES
-
 mongoose.connect(process.env.MONGODB_URI, () => {
     console.log("Database connection established successfully!");
 });
@@ -59,7 +58,7 @@ app.use(
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,
-        cookie: { secure: false, maxAge: ONE_DAY }
+        cookie: { secure: false, maxAge: constants.ONE_DAY }
     })
 );
 
@@ -72,9 +71,6 @@ app.use("/api/resetPasswordRequests", ResetPasswordRoutes);
 app.use("/api/tickets", TicketRoutes);
 app.use("/api/files", FileRoutes);
 app.use("/api/users", UserRoutes);
-
-// logger
-app.use(morgan("combined"));
 
 // start server
 app.listen(PORT, () => {
