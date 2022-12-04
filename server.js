@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const path = require("path");
+
 const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
@@ -16,6 +18,7 @@ const InviteRoutes = require("./routes/invite.routes");
 const OrganizerRoutes = require("./routes/organizer.routes");
 const ResetPasswordRoutes = require("./routes/reset-password.routes");
 const TicketRoutes = require("./routes/ticket.routes");
+const FileRoutes = require("./routes/file.routes");
 
 const PORT = process.env.PORT || 5000;
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -44,10 +47,10 @@ redisClient.on("connect", function (err) {
 });*/
 
 // MIDDLEWARES
-
-// CORS
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 app.use(
     session({
         //store: new RedisStore({ client: redisClient }),
@@ -66,6 +69,7 @@ app.use("/api/invites", InviteRoutes);
 app.use("/api/organizers", OrganizerRoutes);
 app.use("/api/resetPasswordRequests", ResetPasswordRoutes);
 app.use("/api/tickets", TicketRoutes);
+app.use("/api/files", FileRoutes);
 
 // logger
 app.use(morgan("combined"));
