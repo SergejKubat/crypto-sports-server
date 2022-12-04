@@ -65,7 +65,7 @@ exports.register = async (req, res) => {
         session.role = user.role;
 
         // exclude fields
-        const { password, verified, ...fields } = user._doc;
+        const { password, verified, authMessage, ...fields } = user._doc;
 
         res.status(201).json(fields);
 
@@ -117,7 +117,7 @@ exports.login = async (req, res) => {
     session.role = user.role;
 
     // exclude fields
-    const { password, verified, ...fields } = user._doc;
+    const { password, verified, authMessage, ...fields } = user._doc;
 
     res.json(fields);
 };
@@ -179,7 +179,7 @@ exports.logout = (req, res) => {
 exports.auth = async (req, res) => {
     const session = req.session;
 
-    const user = await User.findOne({ username: session.username }).select("-password -verified");
+    const user = await User.findOne({ username: session.username }).select("-password -verified -authMessage");
 
     if (!user) {
         return res.status(404).status({ message: "User not found." });

@@ -10,7 +10,8 @@ const UserSchema = new Schema(
         avatar: String,
         role: { type: String, required: true, default: "user" },
         password: { type: String, required: true },
-        verified: { type: Boolean, default: false }
+        verified: { type: Boolean, default: false },
+        authMessage: String
     },
     { collection: "User", timestamps: true }
 );

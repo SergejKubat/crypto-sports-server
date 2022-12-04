@@ -19,6 +19,7 @@ const OrganizerRoutes = require("./routes/organizer.routes");
 const ResetPasswordRoutes = require("./routes/reset-password.routes");
 const TicketRoutes = require("./routes/ticket.routes");
 const FileRoutes = require("./routes/file.routes");
+const UserRoutes = require("./routes/user.routes");
 
 const PORT = process.env.PORT || 5000;
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -70,6 +71,7 @@ app.use("/api/organizers", OrganizerRoutes);
 app.use("/api/resetPasswordRequests", ResetPasswordRoutes);
 app.use("/api/tickets", TicketRoutes);
 app.use("/api/files", FileRoutes);
+app.use("/api/users", UserRoutes);
 
 // logger
 app.use(morgan("combined"));
