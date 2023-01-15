@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const https = require("https");
+const fs = require("fs");
 const path = require("path");
 
 const express = require("express");
@@ -56,7 +58,7 @@ app.use(
         secret: process.env.SESSION_SECRET,
         saveUninitialized: false,
         resave: false,
-        cookie: { secure: false, maxAge: constants.ONE_DAY }
+        cookie: { secure: true, maxAge: constants.ONE_DAY, sameSite: "none" }
     })
 );
 
@@ -71,8 +73,22 @@ app.use("/api/files", FileRoutes);
 app.use("/api/users", UserRoutes);
 
 // start server
-app.listen(PORT, () => {
+https
+    .createServer(
+        {
+            key: fs.readFileSync("key.pem"),
+            cert: fs.readFileSync("cert.pem")
+        },
+        app
+    )
+    .listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+
+        sync.setupListeners();
+    });
+
+/*app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 
     sync.setupListeners();
-});
+});*/
