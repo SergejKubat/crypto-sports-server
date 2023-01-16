@@ -74,7 +74,7 @@ exports.linkWallet = async (req, res) => {
 
     const { walletAddress, signature } = req.body;
 
-    if (!Web3.utils.isAddress(walletAddress)) {
+    if (!web3.utils.isAddress(walletAddress)) {
         return res.status(400).json({ message: "Invalid wallet address." });
     }
 
@@ -82,7 +82,7 @@ exports.linkWallet = async (req, res) => {
 
     const message = user.authMessage;
 
-    const recoverAddress = web3.eth.accounts.recover(message, signature);
+    const recoverAddress = web3.eth.accounts.recover(message, signature).toLowerCase();
 
     if (walletAddress !== recoverAddress) {
         return res.status(400).json({ message: "Incorrect wallet address." });
