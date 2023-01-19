@@ -130,7 +130,11 @@ exports.getById = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-    const events = await Event.find({ status: "published" }).sort({ startDate: -1 }).exec();
+    const query = req.query;
+
+    const events = await Event.find({ status: "published", ...query })
+        .sort({ startDate: -1 })
+        .exec();
 
     res.json(events);
 };
