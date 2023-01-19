@@ -10,7 +10,7 @@ const OrganizerSchema = new Schema(
         description: String,
         website: String,
         socialMedia: { type: mongoose.SchemaTypes.Map, of: String },
-        eventCount: Number
+        eventsCount: Number
     },
     { collection: "Organizer", timestamps: true }
 );
