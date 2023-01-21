@@ -12,6 +12,8 @@ router.put("/:id", auth, OrganizerController.update);
 
 router.get("/:id", OrganizerController.getById);
 
+router.get("/:id/events", OrganizerController.getAllEvents);
+
 router.get("/", OrganizerController.getAll);
 
 module.exports = router;

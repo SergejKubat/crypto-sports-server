@@ -6,8 +6,6 @@ const UserController = require("../controllers/user.controller");
 
 const router = express.Router();
 
-router.put("/", auth, UserController.update);
-
 router.get("/generateNonce", auth, UserController.generateNonce);
 
 router.put("/linkWallet", auth, UserController.linkWallet);

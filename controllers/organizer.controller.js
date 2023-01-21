@@ -2,6 +2,7 @@ const validator = require("validator");
 
 const User = require("../schemas/User");
 const Organizer = require("../schemas/Organizer");
+const Event = require("../schemas/Event");
 
 exports.create = async (req, res) => {
     const session = req.session;
@@ -126,6 +127,10 @@ exports.getAll = async (req, res) => {
     res.json(organizer);
 };
 
-// @TODO: All events
+exports.getAllEvents = async (req, res) => {
+    const id = req.params.id;
 
-// @TODO: All reviews
+    const events = await Event.find({ status: "published", organizer: id }).sort({ createdAt: 1 }).exec();
+
+    res.json(events);
+};

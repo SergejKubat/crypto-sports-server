@@ -1,6 +1,7 @@
 const validator = require("validator");
 
 const User = require("../schemas/User");
+const Organizer = require("../schemas/Organizer");
 const Event = require("../schemas/Event");
 const QRCode = require("../schemas/QRCode");
 
@@ -43,6 +44,9 @@ exports.create = async (req, res) => {
         return res.status(400).json({ message: "Event tickets are not valid." });
     }
 
+    // find organizer attached to user
+    const organizer = await Organizer.findOne({ user: user });
+
     try {
         const event = await Event.create({
             name,
@@ -53,6 +57,7 @@ exports.create = async (req, res) => {
             startDate,
             tickets,
             user: user.id,
+            organizer,
             organizerWallet: user.walletAddress,
             isQRExternal,
             status: "draft"
@@ -81,6 +86,7 @@ exports.update = async (req, res) => {
     const id = req.params.id;
 
     const user = await User.findOne({ username: session.username });
+
     const event = await Event.findById(id);
 
     // check if user created this event

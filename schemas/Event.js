@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const EventSchema = new Schema(
     {
-        name: { type: String, required: true, index: { unique: true } },
+        name: String,
         image: { type: String, required: true },
         description: String,
         location: String,
@@ -12,6 +12,7 @@ const EventSchema = new Schema(
         startDate: { type: Date, required: true },
         tickets: { type: mongoose.SchemaTypes.Mixed },
         user: { type: mongoose.SchemaTypes.ObjectId, ref: "User" },
+        organizer: { type: mongoose.SchemaTypes.ObjectId, ref: "Organizer" },
         organizerWallet: String,
         contractAddress: String,
         isQRExternal: { type: Boolean, default: false },
@@ -19,5 +20,7 @@ const EventSchema = new Schema(
     },
     { collection: "Event", timestamps: true }
 );
+
+EventSchema.index({ name: "text" });
 
 module.exports = mongoose.model("Event", EventSchema);

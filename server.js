@@ -17,11 +17,12 @@ const constants = require("./constants");
 
 const AuthRoutes = require("./routes/auth.routes");
 const EventRoutes = require("./routes/event.routes");
+const FileRoutes = require("./routes/file.routes");
 const InviteRoutes = require("./routes/invite.routes");
 const OrganizerRoutes = require("./routes/organizer.routes");
 const ResetPasswordRoutes = require("./routes/reset-password.routes");
+const SearchRoutes = require("./routes/search.routes");
 const TicketRoutes = require("./routes/ticket.routes");
-const FileRoutes = require("./routes/file.routes");
 const UserRoutes = require("./routes/user.routes");
 
 const PORT = process.env.PORT || 5000;
@@ -65,24 +66,22 @@ app.use(
 // routes
 app.use("/api", AuthRoutes);
 app.use("/api/events", EventRoutes);
+app.use("/api/files", FileRoutes);
 app.use("/api/invites", InviteRoutes);
 app.use("/api/organizers", OrganizerRoutes);
 app.use("/api/resetPasswordRequests", ResetPasswordRoutes);
+app.use("/api/search", SearchRoutes);
 app.use("/api/tickets", TicketRoutes);
-app.use("/api/files", FileRoutes);
 app.use("/api/users", UserRoutes);
 
-// start server
-https
-    .createServer(
-        {
-            key: fs.readFileSync("key.pem"),
-            cert: fs.readFileSync("cert.pem")
-        },
-        app
-    )
-    .listen(PORT, () => {
-        console.log(`Server listening on port ${PORT}`);
+const config = {
+    key: fs.readFileSync("key.pem"),
+    cert: fs.readFileSync("cert.pem")
+};
 
-        sync.setupListeners();
-    });
+// start server
+https.createServer(config, app).listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+
+    sync.setupListeners();
+});

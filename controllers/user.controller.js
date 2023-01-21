@@ -6,25 +6,6 @@ const User = require("../schemas/User");
 
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.PROVIDER_HTTP_URL));
 
-exports.update = async (req, res) => {
-    const avatar = req.body.avatar;
-
-    if (!validator.isURL(avatar)) {
-        return res.status(400).json({ message: "User avatar is not valid." });
-    }
-
-    const user = await User.findOne({ username: req.session.username });
-
-    user.avatar = avatar;
-
-    await user.save();
-
-    // exclude fields
-    const { password, verified, authMessage, ...fields } = user._doc;
-
-    res.json(fields);
-};
-
 exports.delete = async (req, res) => {
     const plainPassword = req.body.password;
 
