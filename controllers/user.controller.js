@@ -61,14 +61,16 @@ exports.linkWallet = async (req, res) => {
 
     const user = await User.findOne({ username: session.username });
 
+    // verify signature
     const message = user.authMessage;
 
     const recoverAddress = web3.eth.accounts.recover(message, signature).toLowerCase();
 
     if (walletAddress !== recoverAddress) {
-        return res.status(400).json({ message: "Incorrect wallet address." });
+        return res.status(400).json({ message: "Invalid signature." });
     }
 
+    // save wallet address
     user.walletAddress = walletAddress;
 
     await user.save();

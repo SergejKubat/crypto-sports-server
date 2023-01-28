@@ -1,7 +1,13 @@
+const Web3 = require("web3");
+
 const User = require("../schemas/User");
 const Ticket = require("../schemas/Ticket");
 const Event = require("../schemas/Event");
 const QRCode = require("../schemas/QRCode");
+
+const SportEvent = require("../abi/SportEvent.json");
+
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.PROVIDER_HTTP_URL));
 
 exports.create = async (tokenId, type, owner, eventAddress) => {
     const event = await Event.findOne({ contractAddress: eventAddress }).exec();
@@ -10,7 +16,7 @@ exports.create = async (tokenId, type, owner, eventAddress) => {
         throw new Error("Event not found.");
     }
 
-    await Ticket.create({ tokenId, type, owner, eventAddress, event });
+    await Ticket.create({ tokenId, type, owner: owner.toLowerCase(), eventAddress, event });
 };
 
 exports.getPurchasedTickets = async (req, res) => {
@@ -30,7 +36,7 @@ exports.getQRCode = async (req, res) => {
 
     const ticket = await Ticket.findById(ticketId);
 
-    const walletAddress = req.body.walletAddress;
+    const { walletAddress, signature } = req.body;
 
     // check if ticket exsist
     if (!ticket) {
@@ -53,20 +59,45 @@ exports.getQRCode = async (req, res) => {
         return res.status(400).json({ message: "Provided wallet is not ticket owner." });
     }
 
-    // @TODO: verify ownership in contract
+    // verify signature
+    const message = `Wallet: ${walletAddress}`;
 
-    // @TODO: verify signature
+    const recoverAddress = web3.eth.accounts.recover(message, signature).toLowerCase();
 
-    const qrCode = await QRCode.findOne({ ticket: ticket.id });
-
-    if (!qrCode) {
-        return res.status(404).json({ message: "QR Code not found." });
+    if (walletAddress !== recoverAddress) {
+        return res.status(400).json({ message: "Invalid signature." });
     }
 
-    // mark ticket as used
-    ticket.used = true;
+    // verify ownership in contract
+    const eventAddress = ticket.eventAddress;
 
-    await ticket.save();
+    const tokenId = ticket.tokenId;
 
-    res.json({ code: qrCode.value });
+    // create contract instance
+    const SportEvent = new web3.eth.Contract(SportEvent.abi, eventAddress);
+
+    SportEvent.methods
+        .ownerOf(tokenId)
+        .call()
+        .then(async (data) => {
+            console.log("DATA: ", data);
+
+            const qrCode = await QRCode.findOne({ ticket: ticket.id });
+
+            if (!qrCode) {
+                return res.status(404).json({ message: "QR Code not found." });
+            }
+
+            // mark ticket as used
+            ticket.used = true;
+
+            await ticket.save();
+
+            res.json({ code: qrCode.value });
+        })
+        .catch((error) => {
+            console.log("ERROR: ", error);
+
+            return res.status(404).json({ message: "Wallet address is not ticket owner." });
+        });
 };

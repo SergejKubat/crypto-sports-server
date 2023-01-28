@@ -28,8 +28,11 @@ exports.setupListeners = async () => {
             const sportEvent = await Event.findOne({ name: sportEventName }).exec();
 
             sportEvent.contractAddress = sportEventAddress;
+            sportEvent.status = "published";
 
             await sportEvent.save();
+
+            console.log(`Sync is successful for event: ${sportEvent.name}`);
         })
         .on("changed", (changed) => console.log(changed))
         .on("error", (err, receipt) => console.log("Error: ", err, receipt))
@@ -43,6 +46,7 @@ exports.setupListeners = async () => {
             const sportEventAddress = event.returnValues.sportEventAddress;
             const owner = event.returnValues.to;
             const ticketTypes = event.returnValues.ticketTypes;
+
             let startId = parseInt(event.returnValues.startId);
 
             const sportEvent = await Event.findOne({ contractAddress: sportEventAddress }).exec();
