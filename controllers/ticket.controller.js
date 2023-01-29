@@ -19,6 +19,28 @@ exports.create = async (tokenId, type, owner, eventAddress) => {
     await Ticket.create({ tokenId, type, owner: owner.toLowerCase(), eventAddress, event });
 };
 
+exports.update = async (req, res) => {
+    const username = req.session.username;
+
+    const ticketId = req.params.id;
+
+    const recieverAddress = req.body.recieverAddress.toLowerCase();
+
+    const user = await User.findOne({ username: username });
+
+    const ticket = await Ticket.findById(ticketId);
+
+    if (user.walletAddress !== ticket.owner) {
+        return res.status(400).json({ message: "User is not ticket owner." });
+    }
+
+    ticket.owner = recieverAddress;
+
+    await ticket.save();
+
+    res.json(ticket);
+};
+
 exports.getPurchasedTickets = async (req, res) => {
     const username = req.session.username;
 
@@ -32,9 +54,9 @@ exports.getPurchasedTickets = async (req, res) => {
 exports.getQRCode = async (req, res) => {
     const ticketId = req.params.id;
 
-    const ticket = await Ticket.findById(ticketId).populate("event").exec();
-
     const { walletAddress, signature } = req.body;
+
+    const ticket = await Ticket.findById(ticketId).populate("event").exec();
 
     // check if ticket exsist
     if (!ticket) {

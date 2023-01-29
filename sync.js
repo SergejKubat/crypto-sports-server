@@ -44,7 +44,7 @@ exports.setupListeners = async () => {
         .on("data", async (event) => {
             // add tickets to database
             const sportEventAddress = event.returnValues.sportEventAddress;
-            const owner = event.returnValues.to;
+            const owner = event.returnValues.to.toLowerCase();
             const ticketTypes = event.returnValues.ticketTypes;
 
             let startId = parseInt(event.returnValues.startId);
