@@ -16,13 +16,13 @@ exports.register = async (req, res) => {
         return res.status(400).json({ message: "Already logged in." });
     }
 
-    const { username, email, password, inviteCode } = req.body;
+    const { username, email, password, invitationCode } = req.body;
 
     if (username.length < 3) {
         return res.status(400).json({ message: "Username is not valid." });
     }
 
-    if (!validator.isEmail(email)) {
+    if (!invitationCode && !validator.isEmail(email)) {
         return res.status(400).json({ message: "Email is not valid." });
     }
 
@@ -33,8 +33,8 @@ exports.register = async (req, res) => {
     // check if user trying to register as organizer
     let invite;
 
-    if (inviteCode) {
-        invite = await Invite.findById(inviteCode);
+    if (invitationCode) {
+        invite = await Invite.findById(invitationCode);
 
         if (invite) {
             const currentDate = new Date();
@@ -51,7 +51,7 @@ exports.register = async (req, res) => {
     try {
         const user = await User.create({
             username: username,
-            email: email,
+            email: invitationCode ? invite.email : email,
             role: invite ? "organizer" : "user",
             password: passwordHash
         });
@@ -59,6 +59,7 @@ exports.register = async (req, res) => {
         // if invitation exists, mark as 'used'
         if (invite) {
             invite.used = true;
+
             await invite.save();
         }
 
