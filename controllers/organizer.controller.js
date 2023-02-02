@@ -57,6 +57,7 @@ exports.update = async (req, res) => {
     const id = req.params.id;
 
     const user = await User.findOne({ username: session.username });
+
     const organizer = await Organizer.findById(id);
 
     // check if user created this organizer
@@ -117,6 +118,20 @@ exports.getById = async (req, res) => {
     if (!organizer) {
         return res.status(404).json({ message: "Organizer not found" });
     }
+
+    res.json(organizer);
+};
+
+exports.getByUserId = async (req, res) => {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    const organizer = await Organizer.findOne({ user: user.id });
 
     res.json(organizer);
 };
