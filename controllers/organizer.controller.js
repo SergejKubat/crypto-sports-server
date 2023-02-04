@@ -71,10 +71,6 @@ exports.update = async (req, res) => {
         return res.status(400).json({ message: "Organizer name is not valid." });
     }
 
-    if (!validator.isURL(image)) {
-        return res.status(400).json({ message: "Organizer image is not valid." });
-    }
-
     if (!description) {
         return res.status(400).json({ message: "Organizer description is not valid." });
     }
@@ -103,11 +99,6 @@ exports.update = async (req, res) => {
             throw new Error(err);
         }
     }
-
-    // social media
-    //organizer.socialMedia.set('');
-
-    //res.send("Not implemented yet!");
 };
 
 exports.getById = async (req, res) => {
