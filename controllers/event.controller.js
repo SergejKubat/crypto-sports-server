@@ -136,11 +136,17 @@ exports.getById = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
+    const session = req.session;
+
     const query = req.query;
 
-    const events = await Event.find({ status: "published", ...query })
-        .sort({ startDate: -1 })
-        .exec();
+    const criteria = { ...query };
+
+    if (!session.role || session.role === "user") {
+        criteria.status = "published";
+    }
+
+    const events = await Event.find(criteria).sort({ startDate: -1 }).exec();
 
     res.json(events);
 };
