@@ -20,10 +20,6 @@ exports.create = async (req, res) => {
         return res.status(400).json({ message: "Event name is not valid." });
     }
 
-    if (!validator.isURL(image)) {
-        return res.status(400).json({ message: "Event image is not valid." });
-    }
-
     if (!description) {
         return res.status(400).json({ message: "Event description is not valid." });
     }
