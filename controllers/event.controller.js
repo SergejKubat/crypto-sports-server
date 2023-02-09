@@ -1,5 +1,3 @@
-const validator = require("validator");
-
 const User = require("../schemas/User");
 const Organizer = require("../schemas/Organizer");
 const Event = require("../schemas/Event");
@@ -14,7 +12,7 @@ exports.create = async (req, res) => {
 
     const user = await User.findOne({ username: session.username });
 
-    const { name, image, description, location, category, startDate, tickets, isQRExternal } = req.body;
+    const { name, image, description, location, category, startDate, tickets, isQRExternal, status } = req.body;
 
     if (name.length < 3) {
         return res.status(400).json({ message: "Event name is not valid." });
@@ -56,7 +54,7 @@ exports.create = async (req, res) => {
             organizer,
             organizerWallet: user.walletAddress,
             isQRExternal,
-            status: "draft"
+            status: status
         });
 
         res.status(201).json(event);
@@ -90,7 +88,56 @@ exports.update = async (req, res) => {
         return res.status(401).json({ message: "Not authorized." });
     }
 
-    res.send("Not implemented yet!");
+    const { name, image, description, location, category, startDate, tickets, isQRExternal, status } = req.body;
+
+    if (name.length < 3) {
+        return res.status(400).json({ message: "Event name is not valid." });
+    }
+
+    if (!description) {
+        return res.status(400).json({ message: "Event description is not valid." });
+    }
+
+    if (!location) {
+        return res.status(400).json({ message: "Event location is not valid." });
+    }
+
+    if (!category) {
+        return res.status(400).json({ message: "Event category is not valid." });
+    }
+
+    if (!startDate) {
+        return res.status(400).json({ message: "Event date is not valid." });
+    }
+
+    if (!tickets) {
+        return res.status(400).json({ message: "Event tickets are not valid." });
+    }
+
+    event.name = name;
+    event.image = image;
+    event.description = description;
+    event.location = location;
+    event.category = category;
+    event.startDate = startDate;
+    event.tickets = tickets;
+    event.isQRExternal = isQRExternal;
+    event.status = status;
+
+    try {
+        await event.save();
+
+        res.json(event);
+    } catch (err) {
+        // duplicated key
+        if (err.code === 11000) {
+            const keyName = Object.keys(err.keyPattern)[0];
+
+            res.status(400).json({ message: `Event ${keyName} already exists.` });
+        } else {
+            throw new Error(err);
+        }
+    }
 };
 
 exports.delete = async (req, res) => {
@@ -136,13 +183,18 @@ exports.getAll = async (req, res) => {
 
     const query = req.query;
 
-    const criteria = { ...query };
+    const searchCriteria = { ...query };
+    const sortCriteria = {};
 
     if (!session.role || session.role === "user") {
-        criteria.status = "published";
+        searchCriteria.status = "published";
+
+        sortCriteria.startDate = -1;
+    } else {
+        sortCriteria.updatedAt = -1;
     }
 
-    const events = await Event.find(criteria).sort({ startDate: -1 }).exec();
+    const events = await Event.find(searchCriteria).sort(sortCriteria).exec();
 
     res.json(events);
 };
