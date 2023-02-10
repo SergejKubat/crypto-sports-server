@@ -51,6 +51,14 @@ exports.getPurchasedTickets = async (req, res) => {
     res.json(tickets);
 };
 
+exports.getEventTickets = async (req, res) => {
+    const eventId = req.params.id;
+
+    const tickets = await Ticket.find({ event: eventId }).sort({ createdAt: 1 }).exec();
+
+    res.json(tickets);
+};
+
 exports.getQRCode = async (req, res) => {
     const ticketId = req.params.id;
 

@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.get("/", auth, TicketController.getPurchasedTickets);
 
+router.get("/events/:id", auth, TicketController.getEventTickets);
+
 router.post("/:id/getQRCode", auth, TicketController.getQRCode);
 
 router.put("/:id", auth, TicketController.update);
