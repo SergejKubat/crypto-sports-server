@@ -32,7 +32,25 @@ exports.setupListeners = async () => {
 
             await sportEvent.save();
 
-            console.log(`Sync is successful for event: ${sportEvent.name}`);
+            console.log(`New event is created: ${sportEvent.name}`);
+        })
+        .on("changed", (changed) => console.log(changed))
+        .on("error", (err, receipt) => console.log("Error: ", err, receipt))
+        .on("connected", (subscriptionId) => console.log("Subscription ID: ", subscriptionId));
+
+    // SportEventCreated listener
+    sportEventRegistry.events
+        .SportEventPaused(options)
+        .on("data", async (event) => {
+            const sportEventAddress = event.returnValues.eventAddress;
+
+            const sportEvent = await Event.findOne({ contractAddress: sportEventAddress }).exec();
+
+            sportEvent.status = "canceled";
+
+            await sportEvent.save();
+
+            console.log(`Event ${sportEvent.name} is paused!`);
         })
         .on("changed", (changed) => console.log(changed))
         .on("error", (err, receipt) => console.log("Error: ", err, receipt))
