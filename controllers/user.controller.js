@@ -6,6 +6,18 @@ const User = require("../schemas/User");
 
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.PROVIDER_HTTP_URL));
 
+exports.getAll = async (req, res) => {
+    const session = req.session;
+
+    if (session.role !== "admin") {
+        return res.status(401).json({ message: "Not authorized." });
+    }
+
+    const users = await User.find().select("-password -verified -authMessage");
+
+    res.json(users);
+};
+
 exports.delete = async (req, res) => {
     const plainPassword = req.body.password;
 

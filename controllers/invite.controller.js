@@ -71,6 +71,12 @@ exports.getById = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
+    const session = req.session;
+
+    if (session.role !== "admin") {
+        return res.status(401).json({ message: "Not authorized." });
+    }
+
     const type = req.query.type;
 
     let invites;
