@@ -1,5 +1,5 @@
 {
-    "address": "0x6F4C539d1d7cDD2B95709c69a7b040E42f8086C6",
+    "address": "0x77D055A97553d027d5Bb3ABD9361C998c83c90cE",
     "abi": [
         { "type": "constructor", "payable": false, "inputs": [{ "type": "address", "name": "_factory" }] },
         {
